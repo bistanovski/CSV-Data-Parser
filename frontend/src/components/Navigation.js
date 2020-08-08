@@ -11,9 +11,6 @@ const Navigation = () => {
             <div style={{marginRight: '20px'}}>
                 <NavLink to="/tableview">Table View</NavLink>
             </div>
-            <div style={{marginRight: '20px'}}>
-                <NavLink to="/chartsview">Chart View</NavLink>
-            </div>
        </div>
     );
 }

@@ -23,3 +23,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('/upload-file', 'FileUploadController@uploadFile');
 
 Route::get('/users', 'UsersController@getUsers');
+
+Route::get('/last-user-interactions/{id}', 'UsersController@lastUserInteractions');
+

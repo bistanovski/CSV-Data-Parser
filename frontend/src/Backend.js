@@ -41,5 +41,9 @@ export default {
     const data = new FormData();
     data.append('csv-file', selectedFile);
     Backend.sendRequest(RequestType.POST, '/upload-file', data, onSuccess, onError);
+  },
+
+  getUserInteractions(userId, onSuccess, onError) {
+    Backend.sendRequest(RequestType.GET, '/last-user-interactions/' + userId, null, onSuccess, onError);
   }
 }
