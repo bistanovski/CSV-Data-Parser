@@ -26,3 +26,4 @@ Route::get('/users', 'UsersController@getUsers');
 
 Route::get('/last-user-interactions/{id}', 'UsersController@lastUserInteractions');
 
+Route::get('/user-statistics/{id}/{timePeriod}', 'UsersController@userStatistics');

@@ -4,11 +4,17 @@ import queryString from 'query-string';
 import '@blueprintjs/table/lib/css/table.css';
 import { Cell, Column, Table } from "@blueprintjs/table";
 
+import Select from 'react-select'
 import FusionCharts from "fusioncharts";
 import charts from "fusioncharts/fusioncharts.charts";
 import ReactFusioncharts from "react-fusioncharts";
 
 import Backend from '../Backend';
+
+const dropDownOptions = [
+    { value: 'weekly', label: 'Weekly' },
+    { value: 'monthly', label: 'Monthly' }
+]
 
 const ChartsViewStyle = {
     textAlign: 'center',
@@ -35,123 +41,6 @@ const ChartTitleStyle = {
 // Resolves charts dependancy
 charts(FusionCharts);
 
-const dataSource = {
-  chart: {
-    caption: "Average Score",
-    yaxisname: "Score",
-    subcaption: "2012-2016",
-    showhovereffect: "1",
-    numbersuffix: "%",
-    drawcrossline: "1",
-    plottooltext: "<b>$dataValue</b> of youth were on $seriesName",
-    theme: "fusion"
-  },
-  categories: [
-    {
-      category: [
-        {
-          label: "2012"
-        },
-        {
-          label: "2013"
-        },
-        {
-          label: "2014"
-        },
-        {
-          label: "2015"
-        },
-        {
-          label: "2016"
-        }
-      ]
-    }
-  ],
-  dataset: [
-    {
-      seriesname: "First",
-      data: [
-        {
-          value: "62"
-        },
-        {
-          value: "64"
-        },
-        {
-          value: "64"
-        },
-        {
-          value: "66"
-        },
-        {
-          value: "78"
-        }
-      ]
-    },
-    {
-      seriesname: "Second",
-      data: [
-        {
-          value: "16"
-        },
-        {
-          value: "28"
-        },
-        {
-          value: "34"
-        },
-        {
-          value: "42"
-        },
-        {
-          value: "54"
-        }
-      ]
-    },
-    {
-      seriesname: "Third",
-      data: [
-        {
-          value: "20"
-        },
-        {
-          value: "22"
-        },
-        {
-          value: "27"
-        },
-        {
-          value: "22"
-        },
-        {
-          value: "29"
-        }
-      ]
-    },
-    {
-      seriesname: "Fourth",
-      data: [
-        {
-          value: "18"
-        },
-        {
-          value: "19"
-        },
-        {
-          value: "21"
-        },
-        {
-          value: "21"
-        },
-        {
-          value: "24"
-        }
-      ]
-    }
-  ]
-};
-
-
 const tableCellStyle = {
     display: 'flex', 
     flexDirection: 'column',
@@ -163,12 +52,38 @@ class ChartsView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            userId: '',
             userName: '',
             clientNames: [],
             interactionDates: [],
             typeOfCalls: [],
             durations: [],
+            filterType: { value: 'weekly', label: 'Weekly' }
         };
+
+        this.dataSource = {
+            chart: {
+              caption: "Average Score - Total Call Duration",
+              showhovereffect: "1",
+              drawcrossline: "1",
+              theme: "fusion"
+            },
+            categories: [
+              {
+                category:[]
+              }
+            ],
+            dataset: [
+              {
+                seriesname: "Average Score",
+                data: []
+              },
+              {
+                seriesname: "Total Call Duration (Hours)",
+                data: []
+              }
+            ]
+          }
     }
 
     resetInteractions = () => {
@@ -191,11 +106,35 @@ class ChartsView extends React.Component {
         });
     };
 
+    resetStatistics = () => {
+        this.dataSource.categories[0].category = [];
+        this.dataSource.dataset[0].data = [];
+        this.dataSource.dataset[1].data = [];
+    };
+
+    getUserStatistics = (userId) => {
+        this.resetStatistics();
+        Backend.getUserStatistics(userId, this.state.filterType.value, (response) => {
+            response.data.forEach(element => {
+                this.dataSource.categories[0].category.push({"label": element.date})
+                this.dataSource.dataset[0].data.push({"value": element.average_score})
+                this.dataSource.dataset[1].data.push({"value": element.total_call_duration})
+            })
+            
+            this.forceUpdate();
+
+        }, (error) => {
+            console.log('Error Fetching Interactions:', error);
+        });
+    };
+
     componentDidMount() {
         let params = queryString.parse(this.props.location.search);
         this.setState((state) => ({ userName: params.userName }));
+        this.setState((state) => ({ userId: params.userId }));
         this.getInteractions(params.userId);
-    }
+        this.getUserStatistics(params.userId);
+    };
 
     cellClientRenderer = (rowIndex) => {
         return <Cell style={tableCellStyle}> {this.state.clientNames[rowIndex]} </Cell>
@@ -213,6 +152,15 @@ class ChartsView extends React.Component {
         return <Cell style={tableCellStyle}> {this.state.durations[rowIndex]} </Cell>
     };
 
+    handleChange = selectedOption => {
+        this.setState(
+          { filterType: selectedOption },
+          () => {
+              this.getUserStatistics(this.state.userId);
+          }
+        );
+    };
+
     render() {
         return (
             <div style={{backgroundColor: '#282c34'}}>
@@ -226,12 +174,17 @@ class ChartsView extends React.Component {
 
                         <p style={{fontSize: '20px'}}> Average User Score </p>
 
+                        <Select style={{width: '30%'}} options={dropDownOptions} styles={{option: styles => ({ ...styles, color: 'black' })}}
+                            value={this.state.filterType}
+                            onChange={this.handleChange}
+                        />
+
                         <ReactFusioncharts
                             type="msline"
                             width="100%"
                             height="70%"
                             dataFormat="JSON"
-                            dataSource={dataSource}
+                            dataSource={this.dataSource}
                         />
                     </div>
 

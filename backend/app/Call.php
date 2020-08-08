@@ -18,6 +18,18 @@ class Call extends Model
 
     static public function getInteractionsForUser($id)
     {
-        return Call::where('user_id', $id)->orderBy('date', 'desc')->take(5)->with('client')->get();
+        return Call::where('user_id', $id)
+        ->orderBy('date', 'desc')
+        ->take(5)
+        ->with('client')
+        ->get();
+    }
+
+    static public function getStatisticsForUserAndDate($id, $dateRange)
+    {
+        return Call::where('date', '>=', $dateRange)->where('user_id', $id)
+        ->selectRaw('DATE(date) as date, duration, call_score')
+        ->orderBy('date', 'asc')
+        ->get();
     }
 }

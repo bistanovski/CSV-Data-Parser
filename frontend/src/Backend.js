@@ -45,5 +45,9 @@ export default {
 
   getUserInteractions(userId, onSuccess, onError) {
     Backend.sendRequest(RequestType.GET, '/last-user-interactions/' + userId, null, onSuccess, onError);
+  },
+
+  getUserStatistics(userId, timePeriod, onSuccess, onError) {
+    Backend.sendRequest(RequestType.GET, '/user-statistics/' + userId + '/' + timePeriod, null, onSuccess, onError);
   }
 }

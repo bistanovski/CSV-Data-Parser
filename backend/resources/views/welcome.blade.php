@@ -1,67 +1,23 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>CSV-Data Parser</title>
 
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
-
         <!-- Styles -->
-        <style>
-            html, body {
-                background-color: #fff;
-                color: #636b6f;
-                font-family: 'Nunito', sans-serif;
-                font-weight: 200;
-                height: 100vh;
-                margin: 0;
-            }
-
-            .full-height {
-                height: 100vh;
-            }
-
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
-
-            .position-ref {
-                position: relative;
-            }
-
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
-
-            .content {
-                text-align: center;
-            }
-
-            .title {
-                font-size: 84px;
-            }
-
-        </style>
+        <link rel="stylesheet" href="css/app.chunk.css">
+        <link rel="stylesheet" href="css/main.chunk.css">
     </head>
+
     <body>
-        <div class="flex-center position-ref full-height">
-            <div class="content">
-                
-                <div class="title m-b-md">
-                    CSV-Data Parser
-                </div>
 
-                <div id="csv-data-parser-app"  />
-                <script type="text/javascript" src="js/app.js" />
+        <div id="root"  />
 
-            </div>
-        </div>
+        <script type="text/javascript" src="js/app.chunk.js"></script>
+        <script type="text/javascript" src="js/main.chunk.js"></script>
+        <script type="text/javascript" src="js/runtime-main.js"></script>
+
     </body>
 </html>
